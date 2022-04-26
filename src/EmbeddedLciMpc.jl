@@ -2,19 +2,13 @@ module EmbeddedLciMpc
 
 using Rotations
 using LinearAlgebra
+using OSQP 
+using StaticArrays
+using SparseArrays
+# using ContactImplicitMPC
 
-function add1(a)
-    return a + 1
-end
-
-function times2array(a)
-    return a .* 2.0 
-end
-
-function findEigs(A)
-    println(A)
-    display(eigvals(A))
-    return eigvals(A)
-end 
+include("utils.jl")
+include("controller.jl")
+include("qpController.jl")
 
 end # module
