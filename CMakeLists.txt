@@ -20,12 +20,21 @@ include_directories(src/include)
 add_library(juliaCpp_lib 
     src/juliaCpp.cpp
 )
+target_link_libraries(juliaCpp_lib julia)
 
-add_executable(main src/main.cpp)
-target_link_libraries(main julia juliaCpp_lib)
+# Expose the public includes
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/include
+                                 ${Julia_BINARY_DIRECTORY}/include/julia
+    CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 
-add_executable(testCustomVector src/tests/testCustomVector.cpp)
-target_link_libraries(testCustomVector julia juliaCpp_lib)
+set(${PROJECT_NAME}_LIB_DIRS ${Julia_BINARY_DIRECTORY}/lib
+    CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+message(STATUS ${Julia_BINARY_DIRECTORY}/include/julia)
+# add_executable(main src/main.cpp)
+# target_link_libraries(main julia juliaCpp_lib)
 
-add_executable(testJuliaCall src/tests/testJuliaCall.cpp)
-target_link_libraries(testJuliaCall julia juliaCpp_lib)
+# add_executable(testCustomVector src/tests/testCustomVector.cpp)
+# target_link_libraries(testCustomVector julia juliaCpp_lib)
+
+# add_executable(testJuliaCall src/tests/testJuliaCall.cpp)
+# target_link_libraries(testJuliaCall julia juliaCpp_lib)
