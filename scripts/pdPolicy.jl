@@ -2,7 +2,7 @@ using Pkg; Pkg.activate(".")
 using Revise
 using LinearAlgebra
 import EmbeddedLciMpc as EM
-
+using BenchmarkTools
 
 # (mass::Float64, inertia::Matrix,
 #                 Q::Diagonal, R::Diagonal,
@@ -23,4 +23,8 @@ Kdω = 100.
 qpPolicy = EM.initQP(mass, inertia, Q, R, α, ω, Kpp, Kdp, Kdω)
 
 x = zeros(19); x[4] = 1.0 
-EM.controller(qpPolicy, x, 0.0)
+x[8:10] = [0.1, 0.1, -0.2]
+x[11:13] = [0.1, -0.1, -0.2]
+x[14:16] = [-0.1, 0.1, -0.2]
+x[17:19] = [-0.1, -0.1, -0.2]
+@btime EM.controller($qpPolicy, $x, $0.0)
