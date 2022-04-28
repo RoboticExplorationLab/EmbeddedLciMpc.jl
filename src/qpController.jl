@@ -1,4 +1,3 @@
-abstract type AbstractPolicy end 
 
 const g = 9.81 
 mutable struct PolicyQP 

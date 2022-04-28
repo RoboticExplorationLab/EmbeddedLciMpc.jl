@@ -60,6 +60,7 @@ class JuliaVector2d {
             array_type_ = jl_apply_array_type((jl_value_t*)jl_float64_type, 2); 
             julia_data_ = jl_alloc_array_2d(array_type_, n_rows_, n_cols_); 
             data_ = (double *) jl_array_data(julia_data_); 
+
             for(size_t c = 0; c < n_cols_; c++) {
                 for(size_t r = 0; r < n_rows_; r++) {
                     data_[r + n_rows_*c] = vec_(r, c); 
