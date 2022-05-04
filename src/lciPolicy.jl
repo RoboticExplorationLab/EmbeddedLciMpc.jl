@@ -51,7 +51,6 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 
 	# scale control
 	p.u .= p.newton.traj.u[1]
-	p.u ./= p.N_sample
-	println("??")
+	p.u ./= p.traj.h 
 	return p.u
 end
