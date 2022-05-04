@@ -1,16 +1,26 @@
+"""
+	centroidalStand_test.jl 
+
+	This package is used to precompile the sys_image for running LciMPC.
+		It includes all of the necessary function to run the LciMPC with
+		a centroidal quadruped model. 
+"""
+
 using Pkg; Pkg.activate(".")
+using EmbeddedLciMpc
 using ContactImplicitMPC
 import ContactImplicitMPC as LciMPC
 using LinearAlgebra
 
+vis = false
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# include("continuous_policy.jl")
-include("continuous_policy_v2.jl")
 
+# ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
 model = s.model
 env = s.env
 
+# ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
 	# joinpath(module_dir(), "src/dynamics/centroidal_quadruped/gaits/inplace_trot_v4.jld2"),
     joinpath(CIMPC_path, "dynamics/centroidal_quadruped/gaits/stand_v0.jld2"),
@@ -47,38 +57,38 @@ p = ci_mpc_policy(ref_traj, s, obj,
 					max_time = 1e5),
     n_opts = NewtonOptions(
         r_tol = 3e-5,
-        max_time=1.0e-3,
+        max_time=1.0e-1,
 		solver=:ldl_solver,
         threads=false,
         verbose=false,
         max_iter = 5),
     mpc_opts = CIMPCOptions(
 		# live_plotting=true
-		));
-
-
-# ## Disturbances
-w = [[0.0,0.0,0.0] for i=1:H_sim/N_sample]
-d = open_loop_disturbances(w, N_sample)
-
-# ## Initial conditions
-q1_sim, v1_sim = initial_conditions(ref_traj);
-sim = simulator(s, H_sim, h=h_sim, policy=p);
-q1_sim0 = deepcopy(q1_sim)
-# LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)
-simulate!(sim)
+));
 
 # ## Run a single step 
-@time exec_policy(p, [zeros(18); zeros(18); zeros(12)], 0.1)
+q1_sim, v1_sim = initial_conditions(ref_traj);
+q1_sim0 = deepcopy(q1_sim)
+output = EmbeddedLciMpc.exec_policy(p, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
+println(output)
 
-# Visualization
-vis = ContactImplicitMPC.Visualizer()
-ContactImplicitMPC.open(vis)
+# ## Sim and Visualization
+if vis 
+	vis = ContactImplicitMPC.Visualizer()
+	ContactImplicitMPC.open(vis)
 
+	# ## Initial conditions
+	q1_sim, v1_sim = initial_conditions(ref_traj);
+	sim = simulator(s, H_sim, h=h_sim, policy=p);
+	q1_sim0 = deepcopy(q1_sim)
+	sim.traj.q[1] = q1_sim0; sim.traj.v[1] = v1_sim
+	sim.traj.q[2] = q1_sim0; 
+	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)
 
-## 
-LciMPC.set_light!(vis)
-LciMPC.set_floor!(vis, grid=true)
-LciMPC.set_background!(vis)
-anim = LciMPC.visualize!(vis, model, sim.traj.q; Δt=h_sim)
+	##
+	LciMPC.set_light!(vis)
+	LciMPC.set_floor!(vis, grid=true)
+	LciMPC.set_background!(vis)
+	anim = LciMPC.visualize!(vis, model, sim.traj.q; Δt=h_sim) 
+end 

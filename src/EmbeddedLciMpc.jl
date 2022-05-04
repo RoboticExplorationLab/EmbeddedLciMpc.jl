@@ -5,13 +5,13 @@ using LinearAlgebra
 # using OSQP 
 using StaticArrays
 using SparseArrays
-# using ContactImplicitMPC
+import ContactImplicitMPC as LciMPC
 
 abstract type AbstractPolicy end 
 
 include("utils.jl")
 include("controller.jl")
 include("pdController.jl")
-# include("qpController.jl")
+include("lciPolicy.jl")
 
 end # module

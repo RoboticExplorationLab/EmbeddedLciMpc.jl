@@ -1,6 +1,7 @@
 
 #include <vector> 
 #include "Eigen/Dense"
+#include "Eigen/Core"
 #include "julia.h"
 
 using namespace std; 
@@ -22,10 +23,22 @@ class JuliaVector1d {
             julia_data_ = jl_ptr_to_array_1d(array_type_, data_.data(), size_, 0); 
         }
 
+        JuliaVector1d(Eigen::VectorXd vec) {
+            // JuliaVector1d(vector<double>(vec.data(), vec.data() + vec.size())); 
+            data_ = vector<double>(vec.data(), vec.data() + vec.size()); 
+            size_ = vec.size(); 
+            array_type_ = jl_apply_array_type((jl_value_t*)jl_float64_type, 1); 
+            julia_data_ = jl_ptr_to_array_1d(array_type_, data_.data(), size_, 0); 
+        }
+
         std::vector<double> toCVector() {
             double *j_data = (double*) jl_array_data(julia_data_); 
             data_ = vector<double>(j_data, j_data + size_); 
             return data_; 
+        }
+
+        Eigen::VectorXd toEigenVector() {
+            return Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(data_.data(), data_.size());
         }
 
         jl_array_t* toJArray() {

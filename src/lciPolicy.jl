@@ -1,41 +1,3 @@
-
-function simulate!(s::LciMPC.Simulator{T}; 
-	clock_time_noise=1.0e-3,
-	verbose=false) where T
-    status = false
-
-    p = s.policy
-	w = s.dist
-	traj = s.traj
-
-	N = length(traj.u)
-
-	# state 
-	t = 1
-	x = [traj.q[t+1]; (traj.q[t+1] - traj.q[t]) ./ s.h; traj.γ[t]]
-
-	# last_computed_control = p.ref_traj.u[1] / N_sample
-	clock_time = 0.0
-    for t = 1:N
-		# println("timestep $t / $N, time $time")
-		policy_time = @elapsed traj.u[t] = exec_policy(p, x, clock_time)
-		s.opts.record && (s.stats.policy_time[t] = policy_time)
-
-        # disturbances
-        # traj.w[t] .= LciMPC.disturbances(w, traj.q[t+1], t)
-
-        # step
-        status = LciMPC.RoboDojo.step!(s, t, verbose=verbose)
-		x .= [traj.q[t+2]; (traj.q[t+2] - traj.q[t+1]) ./ s.h; traj.γ[t]]
-        # x .= [traj.q[t+2]; (traj.q[t+2] - traj.q[t+1]) ./ s.h; zeros(4)]
-		clock_time += s.h + clock_time_noise * rand(1)[1]
-
-        !status && break
-    end
-
-    return status
-end
-
 function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {T,NQ,NU,NW,NC}
 	# reset
 	if t ≈ 0.0
@@ -90,6 +52,6 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	# scale control
 	p.u .= p.newton.traj.u[1]
 	p.u ./= p.N_sample
-
+	println("??")
 	return p.u
 end
