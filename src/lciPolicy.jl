@@ -52,5 +52,10 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	# scale control
 	p.u .= p.newton.traj.u[1]
 	p.u ./= p.traj.h 
-	return p.u
+
+	# extract the first desired state from the controller 
+	q_now = p.traj.q[1]
+	q_next = p.traj.q[2]
+	v_now = (q_next - q_now) / p.traj.h 
+	return [p.u; q_now; v_now]
 end

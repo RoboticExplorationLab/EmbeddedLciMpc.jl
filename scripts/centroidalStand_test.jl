@@ -43,7 +43,7 @@ obj = TrackingVelocityObjective(model, env, H_mpc,
 	u = [Diagonal(3e-6 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 	v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p = ci_mpc_policy(ref_traj, s, obj,
+p_stand = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -69,7 +69,7 @@ p = ci_mpc_policy(ref_traj, s, obj,
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_stand, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
 println(output)
 
@@ -80,12 +80,10 @@ if vis
 
 	# ## Initial conditions
 	q1_sim, v1_sim = initial_conditions(ref_traj);
-	sim = simulator(s, H_sim, h=h_sim, policy=p);
 	q1_sim0 = deepcopy(q1_sim)
-	sim.traj.q[1] = q1_sim0; sim.traj.v[1] = v1_sim
-	sim.traj.q[2] = q1_sim0; 
-	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)
-
+	LciMPC.RoboDojo.set_state!(sim, q1_sim0, v1_sim, 1)
+	sim = simulator(s, H_sim, h=h_sim, policy=p);
+	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)	
 	##
 	LciMPC.set_light!(vis)
 	LciMPC.set_floor!(vis, grid=true)
