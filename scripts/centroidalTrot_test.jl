@@ -57,6 +57,8 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 q1_sim, v1_sim = initial_conditions(ref_traj);
 output = EmbeddedLciMpc.exec_policy(p_walk, [q1_sim; v1_sim; zeros(12)], 0.0)
 
+println("Finish loading centroidal Trot")
+
 if isVis 
 	vis = ContactImplicitMPC.Visualizer()
 	ContactImplicitMPC.open(vis)

@@ -54,8 +54,8 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	p.u ./= p.traj.h 
 
 	# extract the first desired state from the controller 
-	q_now = p.traj.q[1]
-	q_next = p.traj.q[2]
+	q_now = p.newton.traj.q[2]
+	q_next = p.newton.traj.q[3]
 	v_now = (q_next - q_now) / p.traj.h 
 	return [p.u; q_now; v_now]
 end

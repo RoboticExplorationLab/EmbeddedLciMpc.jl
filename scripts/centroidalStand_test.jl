@@ -71,7 +71,7 @@ q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
 output = EmbeddedLciMpc.exec_policy(p_stand, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println(output)
+println("Finish Loading Cnetroidal Stand")
 
 # ## Sim and Visualization
 if vis 
