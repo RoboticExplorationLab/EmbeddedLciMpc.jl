@@ -38,9 +38,9 @@ H_sim = 320
 
 v0 = 0.0
 obj = TrackingVelocityObjective(model, env, H_mpc,
-    v = [Diagonal(1e-3 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
+    v = [Diagonal(1e-2 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
 	q = [LciMPC.relative_state_cost(1e-0*[1e-2,1e-2,1], 3e-1*[1,1,1], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
-	u = [Diagonal(3e-6 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+	u = [Diagonal(3e-4 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 	v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 p_stand = ci_mpc_policy(ref_traj, s, obj,
@@ -51,7 +51,7 @@ p_stand = ci_mpc_policy(ref_traj, s, obj,
 	ip_opts = InteriorPointOptions(
 					undercut = 5.0,
 					κ_tol = κ_mpc,
-					r_tol = 1.0e-4, # TODO maybe relax this parameter
+					r_tol = 1.0e-3, # TODO maybe relax this parameter
 					diff_sol = true,
 					solver = :empty_solver,
 					max_time = 1e5),
@@ -71,7 +71,7 @@ q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
 output = EmbeddedLciMpc.exec_policy(p_stand, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish Loading Cnetroidal Stand")
+println("Finish Loading Centroidal Stand")
 
 # ## Sim and Visualization
 if vis 
@@ -81,8 +81,8 @@ if vis
 	# ## Initial conditions
 	q1_sim, v1_sim = initial_conditions(ref_traj);
 	q1_sim0 = deepcopy(q1_sim)
+	sim = simulator(s, H_sim, h=h_sim, policy=p_stand);
 	LciMPC.RoboDojo.set_state!(sim, q1_sim0, v1_sim, 1)
-	sim = simulator(s, H_sim, h=h_sim, policy=p);
 	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)	
 	##
 	LciMPC.set_light!(vis)
