@@ -30,8 +30,8 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/include
 set(${PROJECT_NAME}_LIB_DIRS ${Julia_BINARY_DIRECTORY}/lib
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 message(STATUS ${Julia_BINARY_DIRECTORY}/include/julia)
-# add_executable(main src/main.cpp)
-# target_link_libraries(main julia juliaCpp_lib)
+add_executable(main src/main.cpp)
+target_link_libraries(main julia juliaCpp_lib)
 
 # add_executable(testCustomVector src/tests/testCustomVector.cpp)
 # target_link_libraries(testCustomVector julia juliaCpp_lib)

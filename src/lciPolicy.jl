@@ -23,6 +23,7 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 		# p.opts.live_plotting && live_plotting(p.s.model, p.traj, traj, p.newton, p.q0, traj.q[t+1], t)
 
 		# shift trajectory
+		# stride body displacement within one gait cycle
 		LciMPC.rot_n_stride!(p.traj, p.traj_cache, p.stride, p.window)
 
 		# update
