@@ -53,9 +53,14 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	p.u .= p.newton.traj.u[1]
 	p.u ./= p.traj.h 
 
-	# extract the first desired state from the controller 
+	# extract the current reference trajectory from the controller 
+	q_ref_now = p.traj.q[2]
+	q_ref_next = p.traj.q[3]
+	v_ref = (q_ref_next - q_ref_now) / p.traj.h 
+
+	# extract the solved trajectory from the controller 
 	q_now = p.newton.traj.q[2]
 	q_next = p.newton.traj.q[3]
 	v_now = (q_next - q_now) / p.traj.h 
-	return [p.u; q_now; v_now]
+	return [p.u; q_now; v_now; q_ref_now; v_ref]
 end

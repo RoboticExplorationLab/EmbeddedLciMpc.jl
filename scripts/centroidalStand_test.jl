@@ -7,6 +7,7 @@
 """
 
 using Pkg; Pkg.activate(".")
+using Revise
 using EmbeddedLciMpc
 using ContactImplicitMPC
 import ContactImplicitMPC as LciMPC
