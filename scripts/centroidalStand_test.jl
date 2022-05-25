@@ -24,7 +24,8 @@ env = s.env
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
 	# joinpath(module_dir(), "src/dynamics/centroidal_quadruped/gaits/inplace_trot_v4.jld2"),
-    joinpath(CIMPC_path, "dynamics/centroidal_quadruped/gaits/stand_v0.jld2"),
+    # joinpath(CIMPC_path, "dynamics/centroidal_quadruped/gaits/stand_v0.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/stand.jld2"), 
     load_type = :split_traj_alt));
 
 H = ref_traj.H
@@ -40,8 +41,8 @@ H_sim = 320
 v0 = 0.0
 obj = TrackingVelocityObjective(model, env, H_mpc,
     v = [Diagonal(1e-2 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
-	q = [LciMPC.relative_state_cost(1e-0*[1e-2,1e-2,1], 3e-1*[1,1,1], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
-	u = [Diagonal(3e-4 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+	q = [LciMPC.relative_state_cost(1*[1e-2,1e-2,10], 1e-1*[1,1,1], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
+	u = [Diagonal(3e-5 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 	v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 p_stand = ci_mpc_policy(ref_traj, s, obj,
@@ -82,7 +83,15 @@ if vis
 	# ## Initial conditions
 	q1_sim, v1_sim = initial_conditions(ref_traj);
 	q1_sim0 = deepcopy(q1_sim)
-	sim = simulator(s, H_sim, h=h_sim, policy=p_stand);
+	q1_sim0[1:3] = [-0.00 0.00 0.3089]
+	q1_sim0[4:6] = [-0.01 -0.05 0.0085]
+	q1_sim0[7:9] = [0.2027 0.1399 0.001]
+	q1_sim0[10:12] = [0.1279 -0.1246 0.0035]
+	q1_sim0[13:15] = [-0.153 0.1216 0.001]
+	q1_sim0[16:18] = [-0.178 -0.1196 0.00]
+	output = EmbeddedLciMpc.exec_policy(p_stand, [q1_sim0; v1_sim; ones(4)*0], 0.0)
+
+	sim = simulator(s, H_sim, h=h_sim, policy=p_walk);
 	LciMPC.RoboDojo.set_state!(sim, q1_sim0, v1_sim, 1)
 	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)	
 	##
