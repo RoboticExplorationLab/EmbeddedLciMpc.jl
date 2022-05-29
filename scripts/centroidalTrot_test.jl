@@ -29,7 +29,7 @@ N_sample = 5
 H_mpc = 2
 h_sim = h / N_sample
 H_sim = 1000
-κ_mpc = 2.0e-4
+κ_mpc = 1.0e-5
 
 # N_sample = 5
 # H_mpc = 10
@@ -37,12 +37,18 @@ H_sim = 1000
 # H_sim = 320
 # κ_mpc = 2.0e-4
 
-v0 = -0.3
+v0 = 0.0
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+#     v = [Diagonal(1e-2 * [[3,3,10]; 1e3*[15,15,15]; 1e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+# 	q = [LciMPC.relative_state_cost(1*[5e-1,5e-1,50], 1e-1*[150,150,10], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
+# 	u = [Diagonal(3e-4 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+# 	v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+
 obj = TrackingVelocityObjective(model, env, H_mpc,
-    v = [Diagonal(1e-2 * [[1,1,10]; 1e3*[5,5,15]; 1e-4 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
-	q = [LciMPC.relative_state_cost(1*[1e-4,1e-4,50], 1e-1*[1,5,10], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
-	u = [Diagonal(3e-5 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-	v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+v = h/H_mpc * [Diagonal([[0,0,15]; [6000,6000,8000]; 2e-4 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([100,100,1000], [1200,1200,1200], [4,4,20]) for t = 1:H_mpc],
+u = h/H_mpc * [Diagonal(6e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 p_walk = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
@@ -52,7 +58,7 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 	ip_opts = InteriorPointOptions(
 					undercut = 5.0,
 					κ_tol = κ_mpc,
-					r_tol = 1.0e-3, # TODO maybe relax this parameter
+					r_tol = 1.0e-5, # TODO maybe relax this parameter
 					diff_sol = true,
 					solver = :empty_solver,
 					max_time = 1e5),
