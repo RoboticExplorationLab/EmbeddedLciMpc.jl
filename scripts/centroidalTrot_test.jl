@@ -186,6 +186,14 @@ q = h/H_mpc * [LciMPC.relative_state_cost([700,700,1000], [1200,1200,1200], [4,4
 u = h/H_mpc * [Diagonal(6e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
+# velocity tracking 
+# v0 = 0.2
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+# v = h/H_mpc * [Diagonal([[1,1,15]; [6000,6000,8000]; 2e-4 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+# q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1000], [1200,1200,1200], [4,4,20]) for t = 1:H_mpc],
+# u = h/H_mpc * [Diagonal(6e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+# v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+
 # obj = TrackingVelocityObjective(model, env, H_mpc,
 #     # v = [Diagonal(1e-3 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
 # 	v = [Diagonal([2e+1*[1,1,1]; 1e+3*[1,1,1]; fill(1e0*[1,1,0.3], 4)...]) for t = 1:H_mpc],
