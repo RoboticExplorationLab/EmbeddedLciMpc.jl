@@ -245,12 +245,12 @@ h_sim = h / N_sample
 H_sim = 320
 κ_mpc = 1.0e-5
 
-v0 = -0.1
-obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[1,1,15]; [6000,6000,8000]; 2e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([30,30,1000], [1200,1200,1200], [2,2,20]) for t = 1:H_mpc],
-u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+# v0 = -0.1
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+# v = h/H_mpc * [Diagonal([[1,1,15]; [6000,6000,800]; 2e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+# q = h/H_mpc * [LciMPC.relative_state_cost([30,30,1000], [1200,1200,1200], [2,2,20]) for t = 1:H_mpc],
+# u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+# v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 # v_target = [1/ref_traj.h * [0;v0;0; 0;0;0; 0;v0;0; 0;v0;0; 0;v0;0; 0;v0;0] for t = 1:H_mpc],)
 
 
@@ -262,13 +262,30 @@ v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t
 # u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 # v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-# unstable joy stick tracking 
+v0 = 0.0
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[120,120,25]; [100,100,100]; 2e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([0,0,500], [250,250,200], [60,60,60]) for t = 1:H_mpc],
+v = h/H_mpc * [Diagonal([[10,20,15]; [6000,6000,800]; 2e-3 * fill([2,2,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1000], [1200,1200,1200], [5,5,15]) for t = 1:H_mpc],
 u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+# v_target = [1/ref_traj.h * [0;v0;0; 0;0;0; 0;v0;0; 0;v0;0; 0;v0;0; 0;v0;0] for t = 1:H_mpc],)
 
+
+# velocity tracking 
+# v0 = 0.2
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+# v = h/H_mpc * [Diagonal([[1,1,15]; [6000,6000,8000]; 2e-4 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+# q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1000], [1200,1200,1200], [4,4,20]) for t = 1:H_mpc],
+# u = h/H_mpc * [Diagonal(6e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+# v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+#     # v = [Diagonal(1e-3 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
+# 	v = [Diagonal([2e+1*[1,1,1]; 1e+3*[1,1,1]; fill(1e0*[1,1,0.3], 4)...]) for t = 1:H_mpc],
+# 	q = [Diagonal([1e-0*[1e-1,1e-1,1]; 3e-0*[1,1,1]; fill(1e+0*[0.2,0.2,20], 4)...]) for t = 1:H_mpc],
+# 	u = [Diagonal(1e-4 * vcat(fill([1,1,0.1], 4)...)) for t = 1:H_mpc],
+# 	v_target = [ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],
+# 	)
 
 p_walk = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
@@ -289,10 +306,10 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
         threads=false,
         verbose=false,
         max_iter = 2),
-    mpc_opts = CIMPCOptions(
-		gains=true,
-		# live_plotting=true,
-	)
+    # mpc_opts = CIMPCOptions(
+	# 	gains=true,
+	# 	# live_plotting=true,
+	# )
 )
 
 
