@@ -46,7 +46,14 @@ function exec_policy(p::TVLQRPolicy{T}, x::Vector{T}, t::T) where {T}
 
     timestep = p.timestep
     i = convert(Int64, floor(t / timestep) % p.H + 1)
-    u = p.u[i] + p.K[i] * (p.x[i] - xb)
+    u_dojo = p.u[i] + p.K[i] * (p.x[i] - xb)
+
+    u = [
+        u_dojo[6 .+ (7:9)];
+        u_dojo[6 .+ (10:12)];
+        u_dojo[6 .+ (1:3)];
+        u_dojo[6 .+ (4:6)];
+    ]
 
 	q_ref_now = zeros(19)
 	# q_ref_next = p.traj.q[3]
