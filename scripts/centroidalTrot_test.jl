@@ -264,8 +264,8 @@ v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t
 
 # unstable joy stick tracking 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[10,10,15]; [6000,6000,8000]; 2e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1000], [1200,1200,0], [4,4,20]) for t = 1:H_mpc],
+v = h/H_mpc * [Diagonal([[120,120,25]; [100,100,100]; 2e-3 * fill([1,1,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([0,0,500], [250,250,200], [60,60,60]) for t = 1:H_mpc],
 u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
@@ -289,10 +289,10 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
         threads=false,
         verbose=false,
         max_iter = 2),
-    # mpc_opts = CIMPCOptions(
-	# 	gains=true,
-	# 	# live_plotting=true,
-	# )
+    mpc_opts = CIMPCOptions(
+		gains=true,
+		# live_plotting=true,
+	)
 )
 
 
