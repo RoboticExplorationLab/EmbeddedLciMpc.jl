@@ -5,15 +5,13 @@ using EmbeddedLciMpc
 
 
 isVis = false
-s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
+s = get_simulation("centroidal_quadruped_wall", "flat_3D_lc", "flat")
 model = s.model
 env = s.env
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_trot_20Hz.jld2"),
-	# joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_crawl_20Hz.jld2"),
-	# joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_crawl_v10.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/wall_stand_FL_v2.jld2"),
     load_type = :split_traj_alt))
 
 println(CIMPC_path)
@@ -24,24 +22,31 @@ H = ref_traj.H
 h = ref_traj.h
 
 ###########################################################################################
-# trotting gait EXPERIMENTING with 20Hz and double length
+# wall climbing
 ###########################################################################################
 
 # ## MPC setup
 N_sample = 5
 H_mpc = 2
 h_sim = h / N_sample
-H_sim = 320
-κ_mpc = 1.0e-5
+H_sim = 10
+κ_mpc = 2.0e-4
 
 v0 = 0.0
-obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[500,150,15]; [6000,6000,800]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1000], [1200,1200,600], [5,5,15]) for t = 1:H_mpc],
-u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+# v = h/H_mpc * [Diagonal([[500,150,15]; [6000,6000,800]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+# q = h/H_mpc * [LciMPC.relative_state_cost([10,10,1000], [1200,1200,600], [5,5,15]) for t = 1:H_mpc],
+# u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+# v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_walk = ci_mpc_policy(ref_traj, s, obj,
+obj = TrackingVelocityObjective(model, env, H_mpc,
+	v = h/H_mpc * [Diagonal([[50,50,15]; [6000,6000,800]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+    q = h/H_mpc * [LciMPC.relative_state_cost([250,250,1000], [1200,1200,600], [15,15,30]) for t = 1:H_mpc],
+    # q = h/H_mpc * [Diagonal([[100,100,1000]; [1200,1200,600]; fill([5,5,15], 4)...]) for t = 1:H_mpc],
+    u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+    v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+
+p_wall = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -49,7 +54,7 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 	ip_opts = InteriorPointOptions(
 					undercut = 5.0,
 					κ_tol = κ_mpc,
-					r_tol = 1.0e-5, # TODO maybe relax this parameter
+					r_tol = 1.0e-4, # TODO maybe relax this parameter
 					diff_sol = true,
 					solver = :empty_solver,
 					max_time = 1e5),
@@ -71,9 +76,9 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p_walk, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_wall, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish loading centroidal Trot")
+println("Finish loading centroidal climbing wall")
 
 if isVis 
 	vis = ContactImplicitMPC.Visualizer()
