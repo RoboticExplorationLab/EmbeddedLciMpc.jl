@@ -32,23 +32,29 @@ h = ref_traj.h
 
 # ## MPC setup
 N_sample = 5
-H_mpc = 3
+H_mpc = 2
 h_sim = h / N_sample
 H_sim = 320
 κ_mpc = 2.0e-4
 
-v0 = 0.0
+v0 = 1.0
 
 # standing velocity tracking 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-    v = [Diagonal(1 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
-    # q = [LciMPC.relative_state_cost(1*[1e-2,1e-2,10], 1e-1*[1,1,1], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
-    q = [Diagonal([[0,0,5]; 1e-1*[10,10,1]; fill(1e-0*[0.2,0.2,1], 4)...]) for t = 1:H_mpc],
-    # u = [Diagonal(3e-5 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-    u = [Diagonal(3e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-    v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+v = h/H_mpc * [Diagonal([[5,15,15]; [6,6,8]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([0,0,10], [12,12,6], [5,5,15]) for t = 1:H_mpc],
+u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_stand = ci_mpc_policy(ref_traj, s, obj,
+# obj = TrackingVelocityObjective(model, env, H_mpc,
+#     v = h/H_mpc * [Diagonal([[1,1,15]; [6000,6000,800]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+#     q = h/H_mpc * [LciMPC.relative_state_cost([5,5,50], [600,600,5], [15,15,30]) for t = 1:H_mpc],
+#     # q = h/H_mpc * [Diagonal([[100,100,1000]; [1200,1200,600]; fill([5,5,15], 4)...]) for t = 1:H_mpc],
+#     u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+#     v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+
+
+p_pace_forward = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,

@@ -41,14 +41,12 @@ v0 = 0.0
 
 # standing velocity tracking 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-    v = [Diagonal(1 * [[1,1,1]; 1e+3*[1,1,1]; fill([1,1,1], 4)...]) for t = 1:H_mpc],
-    # q = [LciMPC.relative_state_cost(1*[1e-2,1e-2,10], 1e-1*[1,1,1], 1e-0*[0.2,0.2,1]) for t = 1:H_mpc],
-    q = [Diagonal([[0,0,5]; 1e-1*[10,10,1]; fill(1e-0*[0.2,0.2,1], 4)...]) for t = 1:H_mpc],
-    # u = [Diagonal(3e-5 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-    u = [Diagonal(3e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-    v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+v = h/H_mpc * [Diagonal([[5,1,1]; [6,6,8]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([0,0,1], [12,12,6], [5,5,15]) for t = 1:H_mpc],
+u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_stand = ci_mpc_policy(ref_traj, s, obj,
+p_sidesteps = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -56,7 +54,7 @@ p_stand = ci_mpc_policy(ref_traj, s, obj,
     ip_opts = InteriorPointOptions(
                     undercut = 5.0,
                     κ_tol = κ_mpc,
-                    r_tol = 1.0e-5, # TODO maybe relax this parameter
+                    r_tol = 1.0e-4, # TODO maybe relax this parameter
                     diff_sol = true,
                     solver = :empty_solver,
                     max_time = 1e5),
