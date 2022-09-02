@@ -12,10 +12,12 @@ using EmbeddedLciMpc
 using ContactImplicitMPC
 import ContactImplicitMPC as LciMPC
 using LinearAlgebra
-
+using YAML
 
 vis = false
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
+config_path = joinpath(@__DIR__, "../config_gazebo/pace_forward.yaml")
+config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
@@ -31,19 +33,29 @@ H = ref_traj.H
 h = ref_traj.h
 
 # ## MPC setup
-N_sample = 5
-H_mpc = 2
+N_sample = config["N_sample"]
+H_mpc = config["H_mpc"]
 h_sim = h / N_sample
-H_sim = 320
-κ_mpc = 2.0e-4
+H_sim = config["H_sim"]
+κ_mpc = config["k_mpc"]
 
-v0 = 1.0
+v0 = config["v0"]
 
 # standing velocity tracking 
+v_weights = Diagonal([[config["w_v_pos_x"], config["w_v_pos_y"], config["w_v_pos_z"]]; 
+                    [config["w_v_ang_z"], config["w_v_ang_z"], config["w_v_ang_z"]]; 
+                    fill([config["w_v_ft_x"], config["w_v_ft_y"], config["w_v_ft_z"]], 4)...])
+
+q_weights = LciMPC.relative_state_cost([[config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]]; 
+                    [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]]; 
+                    [config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]]])
+                    
+u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
+
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[5,15,15]; [6,6,8]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([0,0,10], [12,12,6], [5,5,15]) for t = 1:H_mpc],
-u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
+v = h/H_mpc * [v_weights for t = 1:H_mpc],
+q = h/H_mpc * [q_weights for t = 1:H_mpc],
+u = h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 # obj = TrackingVelocityObjective(model, env, H_mpc,

@@ -1,0 +1,36 @@
+# MPC params
+N_sample: 5
+H_mpc: 2
+H_sim: 320
+k_mpc: 2.0e-4
+
+# velocity v
+w_v_pos_x: 500
+w_v_pos_y: 150
+w_v_pos_z: 15
+w_v_ang_z: 6000
+w_v_ang_y: 6000
+w_v_ang_x: 800
+w_v_ft_x: 1.4e-1
+w_v_ft_y: 1.4e-1
+w_v_ft_z: 2.0e-1
+
+# position q
+w_q_pos_x: 0
+w_q_pos_y: 0
+w_q_pos_z: 1000
+w_q_ang_z: 1200
+w_q_ang_y: 1200
+w_q_ang_x: 600
+w_q_ft_x: 5
+w_q_ft_y: 5
+w_q_ft_z: 15
+
+# control u
+w_u_1: 9.0e-3
+w_u_2: 9.0e-3
+w_u_3: 9.0e-3
+
+# v_target
+v0: 0
+
