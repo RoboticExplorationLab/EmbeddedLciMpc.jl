@@ -33,10 +33,10 @@ H = ref_traj.H
 h = ref_traj.h
 
 # ## MPC setup
-N_sample = config["N_sample"]
-H_mpc = config["H_mpc"]
+N_sample = Int(config["N_sample"])
+H_mpc = Int(config["H_mpc"])
 h_sim = h / N_sample
-H_sim = config["H_sim"]
+H_sim = Int(config["H_sim"])
 κ_mpc = config["k_mpc"]
 
 v0 = config["v0"]
@@ -45,13 +45,13 @@ v0 = config["v0"]
 v_weights = Diagonal([[config["w_v_pos_x"], config["w_v_pos_y"], config["w_v_pos_z"]]; 
                     [config["w_v_ang_z"], config["w_v_ang_z"], config["w_v_ang_z"]]; 
                     fill([config["w_v_ft_x"], config["w_v_ft_y"], config["w_v_ft_z"]], 4)...])
-
-q_weights = LciMPC.relative_state_cost([[config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]]; 
-                    [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]]; 
-                    [config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]]])
-                    
+println("here")
+q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]], 
+                    [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]], 
+                    [config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]])
+println("here")                
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
-
+println("here")
 obj = TrackingVelocityObjective(model, env, H_mpc,
 v = h/H_mpc * [v_weights for t = 1:H_mpc],
 q = h/H_mpc * [q_weights for t = 1:H_mpc],
