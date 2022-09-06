@@ -264,8 +264,8 @@ H_sim = 320
 
 v0 = 0.0
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [Diagonal([[300,150,10]; [6000,3000,3000]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
-q = h/H_mpc * [LciMPC.relative_state_cost([0,0,0], [400,200,600], [5,5,15]) for t = 1:H_mpc],
+v = h/H_mpc * [Diagonal([[200,150,50]; [6000,5000,3000]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
+q = h/H_mpc * [LciMPC.relative_state_cost([10,10,0], [400,300,600], [5,5,15]) for t = 1:H_mpc],
 u = h/H_mpc * [Diagonal(8e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 # v_target = [1/ref_traj.h * [0;v0;0; 0;0;0; 0;v0;0; 0;v0;0; 0;v0;0; 0;v0;0] for t = 1:H_mpc],)
