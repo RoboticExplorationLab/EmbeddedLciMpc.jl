@@ -2,12 +2,12 @@
 N_sample: 5
 H_mpc: 2
 H_sim: 320
-k_mpc: 2.0e-4
+k_mpc: 1.0e-5
 
 # velocity v
 w_v_pos_x: 500
 w_v_pos_y: 150
-w_v_pos_z: 15
+w_v_pos_z: 150
 w_v_ang_z: 6000
 w_v_ang_y: 6000
 w_v_ang_x: 800
