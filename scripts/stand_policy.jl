@@ -7,7 +7,7 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config_gazebo/stand.yaml")
+config_path = joinpath(@__DIR__, "config/stand_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -83,31 +83,6 @@ p_stand = ci_mpc_policy(ref_traj, s, obj,
         gains=true
         # live_plotting=true
 ))
-
-# p_stand = ci_mpc_policy(ref_traj, s, obj,
-#     H_mpc = H_mpc,
-#     N_sample = N_sample,
-#     κ_mpc = κ_mpc,
-#     mode = :configuration,
-#     ip_opts = InteriorPointOptions(
-#                     undercut = undercut_ip,
-#                     κ_tol = κ_mpc_ip,
-#                     r_tol = r_tol_ip, # TODO maybe relax this parameter
-#                     diff_sol = true,
-#                     solver = :empty_solver,
-#                     max_time = max_time_ip),
-#     n_opts = NewtonOptions(
-#         r_tol = r_tol_nt,
-#         max_time= max_time_nt,
-#         solver=:ldl_solver,
-#         threads=false,
-#         verbose=false,
-#         max_iter = max_iter_nt),
-#     mpc_opts = CIMPCOptions(
-#         gains=true
-#         # live_plotting=true
-# ))
-# println("here")
 
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
