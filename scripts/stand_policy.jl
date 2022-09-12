@@ -7,7 +7,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/stand_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/stand_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/stand_gazebo_test.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -83,7 +84,7 @@ p_stand = ci_mpc_policy(ref_traj, s, obj,
         gains=true
         # live_plotting=true
 ))
-
+println("here")
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
