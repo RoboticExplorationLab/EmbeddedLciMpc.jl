@@ -42,7 +42,6 @@ function plot_solve_times(h_mpc_list, n_sample_list, name)
             push!(max_list, max_)
             push!(min_list, min_)
             push!(x_list, "MPC horizon=$(h_mpc) ")
-            println(average_list)
         end
         # plot mean and CI for the data set 
         bar_ = PlotlyJS.bar(
