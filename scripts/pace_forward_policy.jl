@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# config_path = joinpath(@__DIR__, "config/trot_gazebo.yaml")
-config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
+config_path = joinpath(@__DIR__, "config/pace_forward_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -17,11 +17,9 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-            joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_trot_20Hz.jld2"),
+joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run1/pace_forward_tol0.001.jld2"), 
                 load_type = :split_traj_alt));
-# println(CIMPC_path)
-# fieldnames(typeof(ref_traj))
-# fieldnames(typeof(ref_traj))
+
 H = ref_traj.H
 h = ref_traj.h
 
@@ -62,14 +60,7 @@ q = h/H_mpc * [q_weights for t = 1:H_mpc],
 u = h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-# obj = TrackingVelocityObjective(model, env, H_mpc,
-# v = h/H_mpc * [Diagonal([[200,150,50]; [6000,5000,3000]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
-# q = h/H_mpc * [LciMPC.relative_state_cost([10,10,0], [400,300,600], [5,5,15]) for t = 1:H_mpc],
-# u = h/H_mpc * [Diagonal(8e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
-# v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
-
-
-p_walk = ci_mpc_policy(ref_traj, s, obj,
+p_pace_forward = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -97,7 +88,7 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p_walk, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_pace_forward, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
 println("Finish Loading Centroidal Trot")
 

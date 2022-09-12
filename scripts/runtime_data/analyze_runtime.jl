@@ -2,7 +2,7 @@ using Statistics
 using Distributions
 using HypothesisTests
 using PlotlyJS
-
+using DataFrames
 function load_csv(file_path)
     # input file path 
     # output a Float64 array for solve times 
@@ -25,7 +25,7 @@ function analyze(solve_time)
     return err, max, min, average 
 end
 
-function plot_solve_times(h_mpc_list, n_sample_list, name)
+function plot_solve_times(h_mpc_list, n_sample_list, gait)
     bar_list = GenericTrace{Dict{Symbol, Any}}[]
     for n_sample in n_sample_list
         average_list = []
@@ -34,7 +34,7 @@ function plot_solve_times(h_mpc_list, n_sample_list, name)
         min_list = []
         x_list = []
         for h_mpc in h_mpc_list
-            file_path = joinpath(@__DIR__, "stand/Nsample$(n_sample)_Hmpc$(h_mpc).csv")
+            file_path = joinpath(@__DIR__, "$(gait)/Nsample$(n_sample)_Hmpc$(h_mpc).csv")
             solve_time = load_csv(file_path);
             err, max_, min_, ave = analyze(solve_time)
             push!(average_list, ave)
@@ -52,37 +52,54 @@ function plot_solve_times(h_mpc_list, n_sample_list, name)
         push!(bar_list, bar_)
         # TODO: max of solve time of the data set 
     end
-
-    PlotlyJS.plot(bar_list)
+    layout = Layout(
+                xaxis_title="",
+                yaxis_title="solve time (ms)",
+                yaxis_range=[0, 10],
+                title=attr(
+                        text= "$(gait) solve times",
+                        y=0.95,
+                        x=0.5,
+                        xanchor= "center",
+                        yanchor= "top"
+                    )
+                # legend_title_text="Legend"
+            )
+    plot = PlotlyJS.plot(bar_list, layout)
     # TODO: save plots 
+    savefig(plot, joinpath(@__DIR__, "$(gait)/solve_times.png"))
+end
+
+function boxplot_solve_times(h_mpc_list, gait)
+    trace_list = GenericTrace{Dict{Symbol, Any}}[]
+    n_sample = 5
+    for h_mpc in h_mpc_list
+        file_path = joinpath(@__DIR__, "$(gait)/Nsample$(n_sample)_Hmpc$(h_mpc).csv")
+        solve_time = load_csv(file_path);
+        trace = box(y=solve_time[5:end], boxpoints="all", name="MPC horizon = $(h_mpc)")
+        push!(trace_list, trace)
+    end 
+    layout = Layout(
+                xaxis_title="",
+                yaxis_title="solve time (ms)",
+                yaxis_range=[0, 35],
+                title=attr(
+                        text= "$(gait) solve times",
+                        y=0.95,
+                        x=0.5,
+                        xanchor= "center",
+                        yanchor= "top"
+                    )
+                # legend_title_text="Legend"
+            )
+    plt = plot(trace_list, layout)
+    savefig(plt, joinpath(@__DIR__, "$(gait)/solve_times.png"))
 end
 
 h_mpc_list = [2, 5, 10]
 n_sample_list = [5, 10]
+boxplot_solve_times(h_mpc_list, "stand")
+boxplot_solve_times(h_mpc_list, "trot")
+# plot_solve_times(h_mpc_list, n_sample_list, "stand")
+# plot_solve_times(h_mpc_list, n_sample_list, "trot")
 
-plot_solve_times(h_mpc_list, n_sample_list, "stand")
-
-
-
-# plot(
-# [
-#     bar(
-#         name = "solve time",
-#         x = ["HMPC=5"], y = [ave],
-#         error_y = attr(type="data", array=[err])
-#     )
-# ])
-
-
-# [
-#     bar(
-#         name="Control",
-#         x=["Trial 1", "Trial 2", "Trial 3"], y=[3, 6, 4],
-#         error_y=attr(type="data", array=[1, 0.5, 1.5])
-#     ),
-#     bar(
-#         name="Experimental",
-#         x=["Trial 1", "Trial 2", "Trial 3"], y=[4, 7, 3],
-#         error_y=attr(type="data", array=[0.5, 1, 2])
-#     )
-# ]
