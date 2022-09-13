@@ -1,14 +1,13 @@
-using Pkg; Pkg.activate(".")
-using Revise
-using EmbeddedLciMpc
 using ContactImplicitMPC
+using LinearAlgebra
 import ContactImplicitMPC as LciMPC
+using EmbeddedLciMpc
 using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/stand_gazebo.yaml")
-# config_path = joinpath(@__DIR__, "config/stand_gazebo_test.yaml")
+config_path = joinpath(@__DIR__, "config/reach_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/reach_gazebo_test.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -18,9 +17,10 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-    # joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/stand_0.1.jld2"), 
-    joinpath(CIMPC_path, "../examples/A1-imitation/results/stand/run8/stand_tol0.001.jld2"), 
-    load_type = :split_traj_alt));
+joinpath(CIMPC_path, "../examples/A1-imitation/results/1005/run34/1005_tol0.001.jld2"), 
+# joinpath(CIMPC_path, "../examples/A1-imitation/results/1005/run37/1005_tol0.001.jld2"), 
+
+load_type = :split_traj_alt));
 
 H = ref_traj.H
 h = ref_traj.h
@@ -50,19 +50,19 @@ v_weights = Diagonal([[config["w_v_pos_x"], config["w_v_pos_y"], config["w_v_pos
                     [config["w_v_ang_z"], config["w_v_ang_z"], config["w_v_ang_z"]]; 
                     fill([config["w_v_ft_x"], config["w_v_ft_y"], config["w_v_ft_z"]], 4)...])
 
-q_weights = Diagonal([[config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]]; 
-                    [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]]; 
-                    fill([config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]], 4)...])
-                     
+q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]], 
+            [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]], 
+            [config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]])
+
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = [v_weights for t = 1:H_mpc],
-q = [q_weights for t = 1:H_mpc],
-u = [u_weights for t = 1:H_mpc],
+v = h/H_mpc * [v_weights for t = 1:H_mpc],
+q = h/H_mpc * [q_weights for t = 1:H_mpc],
+u = h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_stand = ci_mpc_policy(ref_traj, s, obj,
+p_reach = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -81,16 +81,16 @@ p_stand = ci_mpc_policy(ref_traj, s, obj,
         threads=false,
         verbose=false,
         max_iter = max_iter_nt),
-    mpc_opts = CIMPCOptions(
-        gains=true
-        # live_plotting=true
-))
+#     mpc_opts = CIMPCOptions(
+#         gains=true
+#         # live_plotting=true
+# )
+)
 
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p_stand, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_reach, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish Loading Centroidal Stand")
-
+println("Finish Loading Reach")
 

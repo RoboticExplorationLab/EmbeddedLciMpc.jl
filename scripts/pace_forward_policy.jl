@@ -17,7 +17,8 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run1/pace_forward_tol0.001.jld2"), 
+        # joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run1/pace_forward_tol0.001.jld2"), 
+        joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run7/pace_forward_tol0.001.jld2"), 
                 load_type = :split_traj_alt));
 
 H = ref_traj.H
@@ -90,5 +91,5 @@ q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
 output = EmbeddedLciMpc.exec_policy(p_pace_forward, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish Loading Centroidal Trot")
+println("Finish Loading Pace Forward")
 

@@ -1,11 +1,11 @@
 # MPC params
-N_sample: 10
-H_mpc: 5
+N_sample: 5
+H_mpc: 10
 H_sim: 320
-κ_mpc: 2.0e-4
+κ_mpc: 1.0e-5
 
 # IP options 
-κ_mpc_ip: 2.0e-4
+κ_mpc_ip: 1.0e-5
 r_tol_ip: 1.0e-5
 undercut_ip: 5.0e-0
 max_time_ip: 1.0e+5

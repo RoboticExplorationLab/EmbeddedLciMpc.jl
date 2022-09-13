@@ -72,17 +72,24 @@ end
 
 function boxplot_solve_times(h_mpc_list, gait)
     trace_list = GenericTrace{Dict{Symbol, Any}}[]
+    bar_list = GenericTrace{Dict{Symbol, Any}}[]
     n_sample = 5
     for h_mpc in h_mpc_list
-        file_path = joinpath(@__DIR__, "$(gait)/Nsample$(n_sample)_Hmpc$(h_mpc).csv")
+        file_path = joinpath(@__DIR__, "$(gait)/Hmpc$(h_mpc).csv")
         solve_time = load_csv(file_path);
-        trace = box(y=solve_time[5:end], boxpoints="all", name="MPC horizon = $(h_mpc)")
+        trace = box(y=solve_time, boxpoints="all", name="MPC horizon = $(h_mpc)")
         push!(trace_list, trace)
+        bar_ = PlotlyJS.bar(
+                # name = "N Sample = $(n_sample)",
+                x = ["MPC horizon = $(h_mpc)"], y = [maximum(solve_time)],
+                # error_y = attr(type="data", array=err_list)
+            )
+        push!(bar_list, bar_)
     end 
-    layout = Layout(
+    layout_box = Layout(
                 xaxis_title="",
                 yaxis_title="solve time (ms)",
-                yaxis_range=[0, 35],
+                yaxis_range=[0, 40],
                 title=attr(
                         text= "$(gait) solve times",
                         y=0.95,
@@ -92,8 +99,23 @@ function boxplot_solve_times(h_mpc_list, gait)
                     )
                 # legend_title_text="Legend"
             )
-    plt = plot(trace_list, layout)
-    savefig(plt, joinpath(@__DIR__, "$(gait)/solve_times.png"))
+    layout_bar = Layout(
+        xaxis_title="",
+        yaxis_title="solve time (ms)",
+        yaxis_range=[0, 200],
+        title=attr(
+                text= "$(gait) max solve times",
+                y=0.95,
+                x=0.5,
+                xanchor= "center",
+                yanchor= "top"
+            )
+        # legend_title_text="Legend"
+    )
+    box_plt = plot(trace_list, layout_box)
+    bar_plt = plot(bar_list, layout_bar)
+    savefig(box_plt, joinpath(@__DIR__, "$(gait)/solve_times.png"))
+    savefig(bar_plt, joinpath(@__DIR__, "$(gait)/max_solve_times.png"))
 end
 
 h_mpc_list = [2, 5, 10]
@@ -103,3 +125,8 @@ boxplot_solve_times(h_mpc_list, "trot")
 # plot_solve_times(h_mpc_list, n_sample_list, "stand")
 # plot_solve_times(h_mpc_list, n_sample_list, "trot")
 
+file_path = joinpath(@__DIR__, "reach/test.csv")
+solve_time = load_csv(file_path);
+mean(solve_time)
+
+maximum(solve_time)
