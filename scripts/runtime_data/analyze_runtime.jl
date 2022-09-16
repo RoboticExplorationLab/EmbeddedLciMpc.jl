@@ -125,7 +125,7 @@ boxplot_solve_times(h_mpc_list, "trot")
 # plot_solve_times(h_mpc_list, n_sample_list, "stand")
 # plot_solve_times(h_mpc_list, n_sample_list, "trot")
 
-file_path = joinpath(@__DIR__, "reach/test.csv")
+file_path = joinpath(@__DIR__, "stand/test.csv")
 solve_time = load_csv(file_path);
 mean(solve_time)
 

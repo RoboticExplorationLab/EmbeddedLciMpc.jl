@@ -1,6 +1,6 @@
 # MPC params
 N_sample: 5
-H_mpc: 3
+H_mpc: 10
 H_sim: 320
 κ_mpc: 2.0e-4
 
