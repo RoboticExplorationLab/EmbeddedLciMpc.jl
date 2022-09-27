@@ -1,6 +1,6 @@
 # MPC params
 N_sample: 5
-H_mpc: 5
+H_mpc: 2
 H_sim: 320
 κ_mpc: 1.0e-5
 
@@ -12,7 +12,7 @@ max_time_ip: 1.0e+5
 # Newton options
 r_tol_nt: 3.0e-5
 max_time_nt: 1.0e-1
-max_iter_nt: 5
+max_iter_nt: 2
 
 # velocity v
 w_v_pos_x: 2.0e+2
@@ -28,7 +28,7 @@ w_v_ft_z: 2.0e-3
 # position q
 w_q_pos_x: 1.0e+1
 w_q_pos_y: 1.0e+1
-w_q_pos_z: 1.0e+1
+w_q_pos_z: 0
 w_q_ang_z: 4.0e+2
 w_q_ang_y: 3.0e+2
 w_q_ang_x: 6.0e+2

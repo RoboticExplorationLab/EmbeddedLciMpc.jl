@@ -6,8 +6,7 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/reach_gazebo.yaml")
-# config_path = joinpath(@__DIR__, "config/reach_gazebo_test.yaml")
+config_path = joinpath(@__DIR__, "config/sidesteps_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -17,9 +16,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/1005/run2/1005_tol0.001.jld2"), 
-# joinpath(CIMPC_path, "../examples/A1-imitation/results/1005/run37/1005_tol0.001.jld2"), 
-
+joinpath(CIMPC_path, "../examples/A1-imitation/results/sidesteps/run1/sidesteps_tol0.001.jld2"), 
 load_type = :split_traj_alt));
 
 H = ref_traj.H
@@ -62,7 +59,7 @@ q = h/H_mpc * [q_weights for t = 1:H_mpc],
 u = h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_reach = ci_mpc_policy(ref_traj, s, obj,
+p_sidesteps = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -90,7 +87,7 @@ p_reach = ci_mpc_policy(ref_traj, s, obj,
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p_reach, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_sidesteps, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish Loading Reach")
+println("Finish Loading Sidesteps")
 

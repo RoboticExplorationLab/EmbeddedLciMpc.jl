@@ -13,6 +13,7 @@ config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
 model = s.model
+model.μ_world = 1
 env = s.env
 
 # ## Reference Trajectory Generation 
