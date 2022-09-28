@@ -16,14 +16,16 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/sidesteps/run1/sidesteps_tol0.001.jld2"), 
+joinpath(CIMPC_path, "../examples/A1-imitation/results/sidesteps/run2/sidesteps_tol0.001.jld2"), 
 load_type = :split_traj_alt));
 
 H = ref_traj.H
 h = ref_traj.h
+# h = 0.05
 
 # load params 
-
+# println(ref_traj.H)
+# println(ref_traj.h)
 # ## MPC setup
 N_sample = Int(config["N_sample"])
 H_mpc = Int(config["H_mpc"])
@@ -86,8 +88,10 @@ p_sidesteps = ci_mpc_policy(ref_traj, s, obj,
 
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
+println("here")
 q1_sim0 = deepcopy(q1_sim)
+println("here")
 output = EmbeddedLciMpc.exec_policy(p_sidesteps, [q1_sim0; v1_sim; zeros(12)], 0.0)
-
+println("here")
 println("Finish Loading Sidesteps")
 
