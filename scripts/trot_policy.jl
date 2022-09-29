@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/trot_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
+# config_path = joinpath(@__DIR__, "config/trot_hardware.yaml")
+config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 

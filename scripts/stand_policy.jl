@@ -7,8 +7,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/stand_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/stand_gazebo_test.yaml")
+# config_path = joinpath(@__DIR__, "config/stand_hardware.yaml")
+config_path = joinpath(@__DIR__, "config/stand_gazebo_test.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -18,8 +18,8 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-    # joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/stand_0.1.jld2"), 
-    joinpath(CIMPC_path, "../examples/A1-imitation/results/stand/run9/stand_tol0.001.jld2"), 
+    joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/stand_0.1.jld2"), 
+    # joinpath(CIMPC_path, "../examples/A1-imitation/results/stand/run9/stand_tol0.001.jld2"), 
     load_type = :split_traj_alt));
 
 H = ref_traj.H

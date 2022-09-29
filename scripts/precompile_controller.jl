@@ -1,4 +1,2 @@
-
-include("centroidalStand_test.jl")
-include("centroidalTrot_test.jl")
-# include("centroidalOneLeg_test.jl")
+include("stand_policy.jl")
+include("trot_policy.jl")
