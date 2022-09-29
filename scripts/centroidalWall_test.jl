@@ -11,7 +11,7 @@ env = s.env
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_v0.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_v1.jld2"),
     load_type = :split_traj_alt))
 
 println(CIMPC_path)
@@ -45,7 +45,7 @@ obj = TrackingVelocityObjective(model, env, H_mpc,
     u = h/H_mpc * [Diagonal(9e-3 * vcat(fill([1,1,1], 4)...)) for t = 1:H_mpc],
     v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_wall = ci_mpc_policy(ref_traj, s, obj,
+timing = @elapsed p_wall = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -68,8 +68,7 @@ p_wall = ci_mpc_policy(ref_traj, s, obj,
 	# 	gains=true,
 	# 	# live_plotting=true,
 	# )
-)
-
+);
 ############################################################################################
 ############################################################################################
 
@@ -77,7 +76,7 @@ q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
 output = EmbeddedLciMpc.exec_policy(p_wall, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish loading centroidal climbing wall")
+println("Finish loading centroidal climbing wall. Total time: ", timing, "s")
 
 if isVis 
 	vis = ContactImplicitMPC.Visualizer()
@@ -89,7 +88,7 @@ if isVis
 	
 	# Simulate
 	h_sim = h / N_sample
-	H_sim = 100
+	H_sim = H * N_sample
 	sim = simulator(s, H_sim, h=h_sim, policy=p_wall);
 	LciMPC.RoboDojo.set_state!(sim, q1_sim0, v1_sim, 1)
 	LciMPC.RoboDojo.simulate!(sim, q1_sim0, v1_sim)	
