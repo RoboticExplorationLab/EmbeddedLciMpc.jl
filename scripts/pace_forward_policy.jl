@@ -6,12 +6,13 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/pace_forward_gazebo.yaml")
-# config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
+# config_path = joinpath(@__DIR__, "config/pace_forward_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/pace_forward_hardware.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
+s.model.mass_body = 14.0
 model = s.model
 model.μ_world = 1
 env = s.env

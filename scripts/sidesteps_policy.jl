@@ -6,11 +6,13 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/sidesteps_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/sidesteps_hardware.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
+s.model.mass_body = 14.0
+s.model.μ_world = 0.4
 model = s.model
 env = s.env
 
