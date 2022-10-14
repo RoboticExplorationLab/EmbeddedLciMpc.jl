@@ -2,7 +2,7 @@
 N_sample: 5
 H_mpc: 3
 H_sim: 320
-κ_mpc: 1.0e-5
+κ_mpc: 1.0e-3
 
 # IP options 
 κ_mpc_ip: 1.0e-5
@@ -12,7 +12,7 @@ max_time_ip: 1.0e+5
 # Newton options
 r_tol_nt: 3.0e-5
 max_time_nt: 1.0e-1
-max_iter_nt: 5
+max_iter_nt: 2
 
 # velocity v
 w_v_pos_x: 8.0e+2
