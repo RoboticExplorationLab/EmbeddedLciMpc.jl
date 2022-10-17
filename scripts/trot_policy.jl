@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/trot_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
+config_path = joinpath(@__DIR__, "config/hardware/trot_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -47,11 +47,11 @@ max_iter_nt = Int(config["max_iter_nt"])
 # tracking objective 
 # standing velocity tracking 
 v_weights = Diagonal([[config["w_v_pos_x"], config["w_v_pos_y"], config["w_v_pos_z"]]; 
-                    [config["w_v_ang_z"], config["w_v_ang_z"], config["w_v_ang_z"]]; 
+                    [config["w_v_ang_z"], config["w_v_ang_y"], config["w_v_ang_x"]]; 
                     fill([config["w_v_ft_x"], config["w_v_ft_y"], config["w_v_ft_z"]], 4)...])
 
 q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"], config["w_q_pos_z"]], 
-            [config["w_q_ang_z"], config["w_q_ang_z"], config["w_q_ang_z"]], 
+            [config["w_q_ang_z"], config["w_q_ang_y"], config["w_q_ang_x"]], 
             [config["w_q_ft_x"], config["w_q_ft_y"], config["w_q_ft_z"]])
 
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))

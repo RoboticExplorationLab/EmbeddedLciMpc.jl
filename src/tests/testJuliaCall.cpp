@@ -19,7 +19,7 @@ int main() {
     jl_value_t *argument = jl_box_float64(2.0); 
     jl_value_t *result = jl_call1(add1, argument);
     double r = jl_unbox_float64(result); 
-    std::cout << r << std::endl; 
+    // std::cout << r << std::endl; 
 
     //// Example of calling a function with a 1D array 
     // first define an array type, the 1 denotes a 1d array

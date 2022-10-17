@@ -7,7 +7,7 @@ using StaticArrays
 using SparseArrays
 import ContactImplicitMPC as LciMPC
 using JLD2
-
+using YAML
 abstract type AbstractPolicy end 
 
 include("utils.jl")
