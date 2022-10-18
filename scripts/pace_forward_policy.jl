@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/hardware/pace_forward_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/gazebo/pace_forward_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/hardware/pace_forward_hardware.yaml")
+config_path = joinpath(@__DIR__, "config/gazebo/pace_forward_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -19,7 +19,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-        joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run8/pace_forward.jld2"), 
+        joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run9/pace_forward.jld2"), 
         # joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run7/pace_forward_tol0.001.jld2"), 
                 load_type = :split_traj_alt));
 
