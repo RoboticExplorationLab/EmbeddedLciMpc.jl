@@ -17,7 +17,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_v1.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_combined_v7.jld2"),
     load_type = :split_traj_alt))
 
 
@@ -58,9 +58,9 @@ q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"]
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [v_weights for t = 1:H_mpc],
-q = h/H_mpc * [q_weights for t = 1:H_mpc],
-u = h/H_mpc * [u_weights for t = 1:H_mpc],
+v = 3/2*h/H_mpc * [v_weights for t = 1:H_mpc],
+q = 3/2*h/H_mpc * [q_weights for t = 1:H_mpc],
+u = 3/2*h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 timing = @elapsed p_wall = ci_mpc_policy(ref_traj, s, obj,
