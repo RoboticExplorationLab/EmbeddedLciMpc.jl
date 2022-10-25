@@ -6,13 +6,14 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# config_path = joinpath(@__DIR__, "config/hardware/wall_walk_hardware.yaml")
-config_path = joinpath(@__DIR__, "config/gazebo/wall_walk_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/hardware/wall_walk_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/wall_walk_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped_wall", "flat_3D_lc", "flat")
 model = s.model
+# s.model.mass_body = 14.5
 env = s.env
 
 # ## Reference Trajectory Generation 
