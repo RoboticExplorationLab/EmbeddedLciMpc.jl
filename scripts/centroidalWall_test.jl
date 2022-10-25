@@ -11,7 +11,7 @@ env = s.env
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_combined_v7.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_combined_v8.jld2"),
     load_type = :split_traj_alt))
 
 println(CIMPC_path)
