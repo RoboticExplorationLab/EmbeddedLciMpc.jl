@@ -16,13 +16,13 @@ max_iter_nt: 5
 
 # velocity v
 w_v_pos_x: 8.0e+2
-w_v_pos_y: 4.5e+2
+w_v_pos_y: 5.5e+2
 w_v_pos_z: 8.5e+3
 w_v_ang_z: 2.0e+3
 w_v_ang_y: 9.0e+3
 w_v_ang_x: 2.0e+3
 w_v_ft_x: 7.5e+2
-w_v_ft_y: 2.5e+1
+w_v_ft_y: 4.5e+1
 w_v_ft_z: 8.5e+2
 
 # position q
@@ -33,10 +33,10 @@ w_q_ang_z: 2.0e+2
 w_q_ang_y: 9.0e+2
 w_q_ang_x: 2.0e+2
 w_q_ft_x: 2.5e+2
-w_q_ft_y: 5.5e-0
+w_q_ft_y: 5.5e+1
 w_q_ft_z: 3.5e+2
 # control u
-w_u_1: 1.0e-2
+w_u_1: 8.0e-3
 w_u_2: 8.0e-3
 w_u_3: 8.0e-3
 
