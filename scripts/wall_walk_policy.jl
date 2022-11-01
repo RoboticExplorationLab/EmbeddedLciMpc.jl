@@ -60,17 +60,18 @@ q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"]
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = 3/2*h/H_mpc * [v_weights for t = 1:H_mpc],
+v = 5/2*h/H_mpc * [v_weights for t = 1:H_mpc],
 q = 3/2*h/H_mpc * [q_weights for t = 1:H_mpc],
 u = 3/2*h/H_mpc * [u_weights for t = 1:H_mpc],
-# γ = [Diagonal(1e+1 * ones(s.model.nc)) for t = 1:H_mpc],
-# b = [Diagonal(1e+1 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
+# γ = [Diagonal(1e-2 * ones(s.model.nc)) for t = 1:H_mpc],
+# b = [Diagonal(1e-2 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 timing = @elapsed p_wall = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
+    # mode = :configurationforce,
     mode = :configuration,
     ip_opts = InteriorPointOptions(
                     undercut = undercut_ip,
