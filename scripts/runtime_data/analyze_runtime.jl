@@ -38,7 +38,7 @@ function plot_solve_times(h_mpc_list, n_sample_list, gait)
             solve_time = load_csv(file_path);
             err, max_, min_, ave = analyze(solve_time)
             push!(average_list, ave)
-            push!(err_list, err)
+            push!(err_list, err)  
             push!(max_list, max_)
             push!(min_list, min_)
             push!(x_list, "MPC horizon=$(h_mpc) ")
