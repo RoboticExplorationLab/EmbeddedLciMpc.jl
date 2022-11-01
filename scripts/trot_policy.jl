@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/hardware/trot_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/hardware/trot_hardware.yaml")
+config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -60,6 +60,8 @@ obj = TrackingVelocityObjective(model, env, H_mpc,
 v = h/H_mpc * [v_weights for t = 1:H_mpc],
 q = h/H_mpc * [q_weights for t = 1:H_mpc],
 u = h/H_mpc * [u_weights for t = 1:H_mpc],
+γ = [Diagonal(1e+1 * ones(s.model.nc)) for t = 1:H_mpc],
+b = [Diagonal(1e+1 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 # obj = TrackingVelocityObjective(model, env, H_mpc,
@@ -93,7 +95,7 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 #         # live_plotting=true
 # )
 )
-
+println("here")
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
