@@ -38,7 +38,7 @@ function plot_solve_times(h_mpc_list, n_sample_list, gait)
             solve_time = load_csv(file_path);
             err, max_, min_, ave = analyze(solve_time)
             push!(average_list, ave)
-            push!(err_list, err)
+            push!(err_list, err)  
             push!(max_list, max_)
             push!(min_list, min_)
             push!(x_list, "MPC horizon=$(h_mpc) ")
@@ -125,7 +125,8 @@ boxplot_solve_times(h_mpc_list, "trot")
 # plot_solve_times(h_mpc_list, n_sample_list, "stand")
 # plot_solve_times(h_mpc_list, n_sample_list, "trot")
 
-file_path = joinpath(@__DIR__, "stand/test.csv")
+file_path = joinpath(@__DIR__, "trot/w_force_cost_1.csv")
+file_path = joinpath(@__DIR__, "trot/no_force_cost.csv")
 solve_time = load_csv(file_path);
 mean(solve_time)
 
