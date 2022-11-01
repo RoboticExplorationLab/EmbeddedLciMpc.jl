@@ -18,10 +18,10 @@ max_iter_nt: 5
 w_v_pos_x: 4.0e+2
 w_v_pos_y: 1.5e+2
 w_v_pos_z: 0.5e+2
-w_v_ang_z: 6.0e+3
+w_v_ang_z: 7.0e+3
 w_v_ang_y: 5.0e+3
 w_v_ang_x: 3.0e+3
-w_v_ft_x: 1.6e-3
+w_v_ft_x: 2.6e-3
 w_v_ft_y: 1.4e-3
 w_v_ft_z: 2.0e-3
 
