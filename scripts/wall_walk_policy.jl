@@ -61,8 +61,8 @@ obj = TrackingVelocityObjective(model, env, H_mpc,
 v = 3/2*h/H_mpc * [v_weights for t = 1:H_mpc],
 q = 3/2*h/H_mpc * [q_weights for t = 1:H_mpc],
 u = 3/2*h/H_mpc * [u_weights for t = 1:H_mpc],
-γ = [Diagonal(1e+1 * ones(s.model.nc)) for t = 1:H_mpc],
-b = [Diagonal(1e+1 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
+γ = [Diagonal(1e-3 * ones(s.model.nc)) for t = 1:H_mpc],
+b = [Diagonal(1e-3 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
 timing = @elapsed p_wall = ci_mpc_policy(ref_traj, s, obj,
@@ -70,6 +70,7 @@ timing = @elapsed p_wall = ci_mpc_policy(ref_traj, s, obj,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
     mode = :configuration,
+    # mode = :configurationforce,
     ip_opts = InteriorPointOptions(
                     undercut = undercut_ip,
                     κ_tol = κ_mpc_ip,
