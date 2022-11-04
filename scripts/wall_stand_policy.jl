@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# config_path = joinpath(@__DIR__, "config/hardware/wall_walk_hardware.yaml")
-config_path = joinpath(@__DIR__, "config/gazebo/wall_walk_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/hardware/wall_stand_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/wall_stand_v11_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -17,37 +17,11 @@ model = s.model
 # s.model.mass_body = 14.5
 env = s.env
 
-# # Cut (comment out)
-# using JLD2
-# @load joinpath(@__DIR__, "../../ContactImplicitMPC.jl/examples/centroidal_quadruped_wall/reference/" * 
-#     "stand_wall_two_steps_steep_v11.jld2") qm um γm bm ψm ηm μm hm x_sol u_sol x_ref
-
-#     using Plots
-# plot(hcat(qm...)', labels="")
-# start = 103
-# qm = qm[start:end]
-# um = um[start:end]
-# γm = γm[start:end]
-# bm = bm[start:end]
-# ψm = ψm[start:end] 
-# ηm = ηm[start:end]
-# μm = model.μ_world
-# x_sol = x_sol[start:end]
-# u_sol = u_sol[start:end]
-# x_ref = x_ref[start:end]
-# plot(hcat(qm...)', labels="")
-# plot(hcat([q[1:6] for q in qm]...)')
-
-# @save joinpath(@__DIR__, "../../ContactImplicitMPC.jl/examples/centroidal_quadruped_wall/reference/" * 
-#     "stand_wall_two_steps_steep_v11-cut.jld2") qm um γm bm ψm ηm μm hm x_sol u_sol x_ref
-
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	# joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_walk_inplace.jld2"),
-    joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_walk_inplace-slow.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v11.jld2"),
     load_type = :split_traj_alt))
-
 
 # fieldnames(typeof(ref_traj))
 # fieldnames(typeof(ref_traj))
@@ -93,7 +67,7 @@ u = 3/2*h/H_mpc * [u_weights for t = 1:H_mpc],
 # b = [Diagonal(1e-2 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-timing = @elapsed p_wall_walk = ci_mpc_policy(ref_traj, s, obj,
+timing = @elapsed p_wall_stand = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -124,7 +98,7 @@ q1_sim, v1_sim = initial_conditions(ref_traj);
 
 q1_sim0 = deepcopy(q1_sim)
 
-output = EmbeddedLciMpc.exec_policy(p_wall_walk, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_wall_stand, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish loading centroidal wall walk. Total time: ", timing, "s")
+println("Finish loading centroidal wall stand. Total time: ", timing, "s")
 
