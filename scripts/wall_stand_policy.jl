@@ -7,7 +7,7 @@ using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
 config_path = joinpath(@__DIR__, "config/hardware/wall_stand_hardware.yaml")
-# config_path = joinpath(@__DIR__, "config/gazebo/wall_stand_v11_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/wall_stand_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -20,7 +20,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v11.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v15.jld2"),
     load_type = :split_traj_alt))
 
 # fieldnames(typeof(ref_traj))

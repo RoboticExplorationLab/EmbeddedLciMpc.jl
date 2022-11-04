@@ -45,7 +45,7 @@ env = s.env
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
 	# joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_walk_inplace.jld2"),
-    joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_walk_inplace-slow.jld2"),
+    joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_walk_inplace.jld2"),
     load_type = :split_traj_alt))
 
 
