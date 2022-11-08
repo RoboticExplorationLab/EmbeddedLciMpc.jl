@@ -12,7 +12,8 @@ config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped_wall", "flat_3D_lc", "flat")
-s.model.μ_world = 0.8
+@assert s.model.μ_world == 0.3
+s.model.μ_world = 0.3
 model = s.model
 # s.model.mass_body = 14.5
 env = s.env
@@ -20,9 +21,10 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v15.jld2"),
+	# joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v15.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_stand_quasi_walk_v2.jld2"),
     load_type = :split_traj_alt))
-
+update_friction_coefficient!(ref_traj, model, env)
 # fieldnames(typeof(ref_traj))
 # fieldnames(typeof(ref_traj))
 H = ref_traj.H
