@@ -6,8 +6,9 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# config_path = joinpath(@__DIR__, "config/hardware/trot_hardware.yaml")
-config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/hardware/trot_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo.yaml")
+# config_path = joinpath(@__DIR__, "config/gazebo/trot_gazebo_h.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -18,6 +19,7 @@ env = s.env
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
             joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_trot_20Hz.jld2"),
+            # joinpath(CIMPC_path, "../examples/A1-imitation/results/trot_forward/run1/trot_forward.jld2"),
                 load_type = :split_traj_alt));
 # println(CIMPC_path)
 # fieldnames(typeof(ref_traj))
@@ -57,13 +59,13 @@ q_weights = LciMPC.relative_state_cost([config["w_q_pos_x"], config["w_q_pos_y"]
 u_weights = Diagonal(vcat(fill([config["w_u_1"], config["w_u_2"], config["w_u_3"]], 4)...))
 
 obj = TrackingVelocityObjective(model, env, H_mpc,
-v = h/H_mpc * [v_weights for t = 1:H_mpc],
-q = h/H_mpc * [q_weights for t = 1:H_mpc],
-u = h/H_mpc * [u_weights for t = 1:H_mpc],
-# γ = [Diagonal(1e+1 * ones(s.model.nc)) for t = 1:H_mpc],
-# b = [Diagonal(1e+1 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
-v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
-
+    v = H_mpc/2*h/H_mpc * [v_weights for t = 1:H_mpc],
+    q = H_mpc/2*h/H_mpc * [q_weights for t = 1:H_mpc],
+    u = H_mpc/2*h/H_mpc * [u_weights for t = 1:H_mpc],
+    # γ = [Diagonal(1e+1 * ones(s.model.nc)) for t = 1:H_mpc],
+    # b = [Diagonal(1e+1 * ones(s.model.nc * friction_dim(s.env))) for t = 1:H_mpc],
+    v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
+# println("error here")
 # obj = TrackingVelocityObjective(model, env, H_mpc,
 # v = h/H_mpc * [Diagonal([[200,150,50]; [6000,5000,3000]; 2e-3 * fill([0.7,0.7,1], 4)...]) for t = 1:H_mpc],
 # q = h/H_mpc * [LciMPC.relative_state_cost([10,10,0], [400,300,600], [5,5,15]) for t = 1:H_mpc],
@@ -95,7 +97,7 @@ p_walk = ci_mpc_policy(ref_traj, s, obj,
 #         # live_plotting=true
 # )
 )
-
+# println("error here")
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
