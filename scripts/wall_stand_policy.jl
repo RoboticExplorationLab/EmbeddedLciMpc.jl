@@ -21,8 +21,8 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-	# joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v15.jld2"),
-	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_stand_quasi_walk_v3.jld2"),
+	joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/stand_wall_two_steps_steep_v15.jld2"),
+	# joinpath(CIMPC_path, "../examples/centroidal_quadruped_wall/reference/wall_stand_quasi_walk_5_cm_20_Tm_v2.jld2"),
     load_type = :split_traj_alt))
 update_friction_coefficient!(ref_traj, model, env)
 # fieldnames(typeof(ref_traj))
