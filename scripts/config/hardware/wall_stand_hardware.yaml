@@ -39,7 +39,7 @@ w_v_ft_z: 8.0e+0
 # position q
 w_q_pos_x: 1.0e+1
 w_q_pos_y: 1.0e+1
-w_q_pos_z: 0
+w_q_pos_z: 1.0e-1
 w_q_ang_z: 2.0e+2
 w_q_ang_y: 6.0e+2
 w_q_ang_x: 3.0e+2
