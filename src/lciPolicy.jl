@@ -80,33 +80,23 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 		# p.next_time_update = 0.0
 		p.q0 .= p.ref_traj.q[1]
 		# p.altitude .= 0.0
-		p.buffer_time = 0.0
 		# set_trajectory!(p.traj, p.ref_traj)
 		LciMPC.set_implicit_trajectory!(p.im_traj, p.im_traj_cache)
 		LciMPC.reset_window!(p.window)
 	end
 
-	policy_time = @elapsed begin
-		if p.buffer_time <= 0.0
-
-			# window 
-			idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
-			for i = 1:(p.H + 2)
-				p.window[i] = i + idx_nearest - 1 > p.ref_traj.H ? i - p.ref_traj.H + idx_nearest - 1 : i + idx_nearest - 1
-			end
-			LciMPC.set_window!(p.traj, p.ref_traj, p.window)
-
-			# optimize
-			q1 = x[1:NQ]
-			q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
-			LciMPC.newton_solve!(p.newton, p.s, q0, q1,
-				p.window, p.im_traj, p.traj, warm_start = t > 0.0)
-		end
+	# window 
+	idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
+	for i = 1:(p.H + 2)
+		p.window[i] = i + idx_nearest - 1 > p.ref_traj.H ? i - p.ref_traj.H + idx_nearest - 1 : i + idx_nearest - 1
 	end
+	LciMPC.set_window!(p.traj, p.ref_traj, p.window)
 
-	# update buffer time
-	(p.buffer_time <= 0.0) && (p.buffer_time = policy_time)
-	p.buffer_time -= p.traj.h
+	# optimize
+	q1 = x[1:NQ]
+	q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
+	LciMPC.newton_solve!(p.newton, p.s, q0, q1,
+		p.window, p.im_traj, p.traj, warm_start = t > 0.0)
 
 	# control
 	p.u .= p.newton.traj.u[1]
