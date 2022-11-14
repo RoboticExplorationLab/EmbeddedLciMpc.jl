@@ -126,15 +126,15 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	# extract the solved trajectory from the controller 
 	q_now = p.newton.traj.q[p.H+1]
 	q_next = p.newton.traj.q[p.H+2]
-	q_next_next = p.newton.traj.q[p.H+3]
 	v_now = (q_next - q_now) / p.traj.h 
-	v_next = (q_next_next - q_next) / p.traj.h
 
 	# interpolate
-	t_interp = t % p.ref_traj.h / p.ref_traj.h # Where you are between two knot points
-	p.u = (1 - t_interp) .* p.u .+ (t_interp) .* u2
-	q_now = (1 - t_interp) .* q_now .+ (t_interp) .* q_next
-	b_now = (1 - t_interp) .* v_next .+ (t_interp) .* v_next
+	t_interp = (t % p.ref_traj.h / p.ref_traj.h + 0.5) % 1 # Where you are between two knot points
+	u_interp = (1 - t_interp) .* p.u .+ (t_interp) .* u2
+	q_interp = (1 - t_interp) .* q_now .+ (t_interp) .* q_next
+
+	p.u = u_interp
+	q_now = q_interp
 
 	return [p.u; q_now; v_now; q_ref_now; v_ref]
 end
