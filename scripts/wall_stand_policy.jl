@@ -28,7 +28,7 @@ update_friction_coefficient!(ref_traj, model, env)
 # fieldnames(typeof(ref_traj))
 # fieldnames(typeof(ref_traj))
 H = ref_traj.H
-# h = ref_traj.h
+h = ref_traj.h
 # h = 0.05
 # load params 
 

@@ -80,43 +80,47 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 		# p.next_time_update = 0.0
 		p.q0 .= p.ref_traj.q[1]
 		# p.altitude .= 0.0
+		p.buffer_time = 0.0
 		# set_trajectory!(p.traj, p.ref_traj)
 		LciMPC.set_implicit_trajectory!(p.im_traj, p.im_traj_cache)
 		LciMPC.reset_window!(p.window)
 	end
 
-	# window 
-	idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
-	for i = 1:(p.H + 2)
-		p.window[i] = i + idx_nearest - 1 > p.ref_traj.H ? i - p.ref_traj.H + idx_nearest - 1 : i + idx_nearest - 1
-	end
-	LciMPC.set_window!(p.traj, p.ref_traj, p.window)
+	policy_time = @elapsed begin
+		if p.buffer_time <= 0.0
 
-	# optimize
-	q1 = x[1:NQ]
-	q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
-	LciMPC.newton_solve!(p.newton, p.s, q0, q1,
-		p.window, p.im_traj, p.traj, warm_start = t > 0.0)
+			# window 
+			idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
+			for i = 1:(p.H + 2)
+				p.window[i] = i + idx_nearest - 1 > p.ref_traj.H ? i - p.ref_traj.H + idx_nearest - 1 : i + idx_nearest - 1
+			end
+			LciMPC.set_window!(p.traj, p.ref_traj, p.window)
+
+			# optimize
+			q1 = x[1:NQ]
+			q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
+			LciMPC.newton_solve!(p.newton, p.s, q0, q1,
+				p.window, p.im_traj, p.traj, warm_start = t > 0.0)
+		end
+	end
+
+	# update buffer time
+	(p.buffer_time <= 0.0) && (p.buffer_time = policy_time)
+	p.buffer_time -= p.traj.h
 
 	# control
 	p.u .= p.newton.traj.u[1]
-	u2 = deepcopy(p.newton.traj.u[2])
 
 	# add gains
 	if p.opts.gains
+		K1 = p.K_traj[p.window[1]]
+
 		q1 = x[1:NQ]
 		q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
-
-		
-		K1 = p.K_traj[p.window[1]]
 		p.u .+= K1 * ([p.traj.q[p.window[1]]; p.traj.q[p.window[2]]] - [q0; q1])
-
-		K2 = p.K_traj[p.window[2]]
-		u2 .+= K2 * ([p.traj.q[p.window[2]]; p.traj.q[p.window[3]]] - [q0; q1])
 	end
 	
 	p.u ./= p.traj.h
-	u2 ./= p.traj.h
 
 	# extract the current reference trajectory from the controller 
 	q_ref_now = p.traj.q[2]
@@ -127,15 +131,6 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	q_now = p.newton.traj.q[p.H+1]
 	q_next = p.newton.traj.q[p.H+2]
 	v_now = (q_next - q_now) / p.traj.h 
-
-	# interpolate
-	t_interp = (t % p.ref_traj.h / p.ref_traj.h + 0.5) % 1 # Where you are between two knot points
-	u_interp = (1 - t_interp) .* p.u .+ (t_interp) .* u2
-	q_interp = (1 - t_interp) .* q_now .+ (t_interp) .* q_next
-
-	p.u = u_interp
-	q_now = q_interp
-
 	return [p.u; q_now; v_now; q_ref_now; v_ref]
 end
 
