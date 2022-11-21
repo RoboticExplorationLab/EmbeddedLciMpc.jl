@@ -12,7 +12,7 @@ max_time_ip: 1.0e+5
 # Newton options
 r_tol_nt: 3.0e-5
 max_time_nt: 1.0e-1
-max_iter_nt: 5
+max_iter_nt: 3
 
 # velocity v
 w_v_pos_x: 3.0e+2

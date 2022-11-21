@@ -19,7 +19,7 @@ env = s.env
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
             joinpath(CIMPC_path, "../examples/centroidal_quadruped/reference/inplace_trot_20Hz.jld2"),
-            # joinpath(CIMPC_path, "../examples/A1-imitation/results/trot_forward/run1/trot_forward.jld2"),
+            # joinpath(CIMPC_path, "../examples/A1-imitation/results/trot/run1/trot.jld2"),
                 load_type = :split_traj_alt));
 # println(CIMPC_path)
 # fieldnames(typeof(ref_traj))
