@@ -107,17 +107,18 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	# update buffer time
 	(p.buffer_time <= 0.0) && (p.buffer_time = policy_time)
 	p.buffer_time -= p.traj.h
+	p.buffer_time = -0.01
 
 	# control
 	p.u .= p.newton.traj.u[1]
 
 	# add gains
 	if p.opts.gains
-		K1 = p.K_traj[p.window[1]]
+		K1 = p.K_traj[1]
 
 		q1 = x[1:NQ]
 		q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
-		p.u .+= K1 * ([p.traj.q[p.window[1]]; p.traj.q[p.window[2]]] - [q0; q1])
+		p.u .+= K1 * ([p.traj.q[1]; p.traj.q[2]] - [q0; q1])
 	end
 	
 	p.u ./= p.traj.h
@@ -128,8 +129,8 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 	v_ref = (q_ref_next - q_ref_now) / p.traj.h 
 
 	# extract the solved trajectory from the controller 
-	q_now = p.newton.traj.q[p.H+1]
-	q_next = p.newton.traj.q[p.H+2]
+	q_now = p.newton.traj.q[3]
+	q_next = p.newton.traj.q[4]
 	v_now = (q_next - q_now) / p.traj.h 
 	return [p.u; q_now; v_now; q_ref_now; v_ref]
 end
