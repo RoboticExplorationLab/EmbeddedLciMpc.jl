@@ -6,21 +6,19 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/pace_forward_gazebo.yaml")
-# config_path = joinpath(@__DIR__, "config/trot_gazebo_test.yaml")
+# config_path = joinpath(@__DIR__, "config/reach_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/reach_hardware.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
 s = get_simulation("centroidal_quadruped", "flat_3D_lc", "flat")
 model = s.model
-# model.μ_world = 1
 env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-        # joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run1/pace_forward_tol0.001.jld2"), 
-        joinpath(CIMPC_path, "../examples/A1-imitation/results/pace_forward/run7/pace_forward_tol0.001.jld2"), 
-                load_type = :split_traj_alt));
+joinpath(CIMPC_path, "../examples/A1-imitation/results/cat00/run5/cat00.jld2"), 
+load_type = :split_traj_alt));
 
 H = ref_traj.H
 h = ref_traj.h
@@ -62,7 +60,7 @@ q = H_mpc/2*h/H_mpc * [q_weights for t = 1:H_mpc],
 u = H_mpc/2*h/H_mpc * [u_weights for t = 1:H_mpc],
 v_target = [1/ref_traj.h * [v0;0;0; 0;0;0; v0;0;0; v0;0;0; v0;0;0; v0;0;0] for t = 1:H_mpc],)
 
-p_pace_forward = ci_mpc_policy(ref_traj, s, obj,
+p_cat_walk = ci_mpc_policy(ref_traj, s, obj,
     H_mpc = H_mpc,
     N_sample = N_sample,
     κ_mpc = κ_mpc,
@@ -90,7 +88,7 @@ p_pace_forward = ci_mpc_policy(ref_traj, s, obj,
 # ## Run a single step 
 q1_sim, v1_sim = initial_conditions(ref_traj);
 q1_sim0 = deepcopy(q1_sim)
-output = EmbeddedLciMpc.exec_policy(p_pace_forward, [q1_sim0; v1_sim; zeros(12)], 0.0)
+output = EmbeddedLciMpc.exec_policy(p_cat_walk, [q1_sim0; v1_sim; zeros(12)], 0.0)
 
-println("Finish Loading Pace Forward")
+println("Finish Loading Cat Walk")
 
