@@ -93,7 +93,9 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 			idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
 			for i = 1:(p.H + 2)
 				p.window[i] = i + idx_nearest - 1 > p.ref_traj.H ? i - p.ref_traj.H + idx_nearest - 1 : i + idx_nearest - 1
+				# print(p.window[i])
 			end
+			# println()
 			LciMPC.set_window!(p.traj, p.ref_traj, p.window)
 
 			# optimize
