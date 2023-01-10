@@ -103,6 +103,9 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 			q0 = x[1:NQ] - x[NQ .+ (1:NQ)] .* p.traj.h
 			LciMPC.newton_solve!(p.newton, p.s, q0, q1,
 				p.window, p.im_traj, p.traj, warm_start = t > 0.0)
+			# shift trajectory
+			# println(p.stride)
+			# LciMPC.rot_n_stride!(p.traj, p.traj_cache, p.stride, p.window)
 		end
 	end
 
