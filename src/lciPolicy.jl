@@ -105,7 +105,7 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 				p.window, p.im_traj, p.traj, warm_start = t > 0.0)
 			# shift trajectory
 			# println(p.stride)
-			LciMPC.rot_n_stride!(p.ref_traj, p.traj_cache, p.stride, p.window)
+			# LciMPC.rot_n_stride!(p.traj, p.traj_cache, p.stride, p.window)
 		end
 	end
 
