@@ -6,7 +6,7 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/cat_walk_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/cat_walk_hardware.yaml")
 config_path = joinpath(@__DIR__, "config/cat_walk_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
@@ -17,7 +17,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/cat00_1/run3/cat00_1.jld2"), 
+joinpath(CIMPC_path, "../examples/A1-imitation/results/cat00_1/run5/cat00_1.jld2"), 
 load_type = :split_traj_alt));
 
 H = ref_traj.H
