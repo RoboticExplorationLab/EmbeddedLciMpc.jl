@@ -79,10 +79,11 @@ p_cat_walk = ci_mpc_policy(ref_traj, s, obj,
         threads=false,
         verbose=false,
         max_iter = max_iter_nt),
-#     mpc_opts = CIMPCOptions(
-#         gains=true
-#         # live_plotting=true
-# )
+    mpc_opts = CIMPCOptions(
+        # gains=true
+        altitude_verbose=true
+        # live_plotting=true
+)
 )
 
 # ## Run a single step 

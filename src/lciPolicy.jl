@@ -88,7 +88,13 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 
 	policy_time = @elapsed begin
 		if p.buffer_time <= 0.0
+			(p.opts.altitude_update && t > 0.0) && (LciMPC.update_altitude!(p.altitude, p.ϕ, p.s,
+										x, NQ, NC,
+										threshold = 20.0,
+										verbose = p.opts.altitude_verbose))
 
+			LciMPC.set_altitude!(p.im_traj, p.altitude)
+			LciMPC.update!(p.im_traj, p.traj, p.s, p.altitude, p.κ[1], p.traj.H)
 			# window 
 			idx_nearest = findnearest(p.times_reference, t % (p.ref_traj.h * (p.ref_traj.H - 1)))[1]
 			for i = 1:(p.H + 2)
