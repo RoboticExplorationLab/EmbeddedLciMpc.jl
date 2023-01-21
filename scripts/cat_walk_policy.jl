@@ -17,7 +17,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/cat00_1/run6/cat00_1.jld2"), 
+joinpath(CIMPC_path, "../examples/A1-imitation/results/cat00_1/run9/cat00_1.jld2"), 
 load_type = :split_traj_alt));
 
 H = ref_traj.H
