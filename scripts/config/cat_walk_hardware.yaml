@@ -15,7 +15,7 @@ max_time_nt: 1.0e-1
 max_iter_nt: 4
 
 # velocity v
-w_v_pos_x: 7.0e+1
+w_v_pos_x: 8.0e+1
 w_v_pos_y: 5.5e+2
 w_v_pos_z: 0.5e+2
 w_v_ang_z: 12.0e+3

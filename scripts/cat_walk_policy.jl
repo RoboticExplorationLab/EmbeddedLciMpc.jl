@@ -81,7 +81,9 @@ p_cat_walk = ci_mpc_policy(ref_traj, s, obj,
         max_iter = max_iter_nt),
     mpc_opts = CIMPCOptions(
         # gains=true
-        altitude_verbose=true
+        altitude_verbose=true,
+        altitude_impact_threshold=150.0,
+        altitude_update=true
         # live_plotting=true
 )
 )

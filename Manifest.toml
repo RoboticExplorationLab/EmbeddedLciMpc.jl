@@ -231,7 +231,7 @@ uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
 version = "1.4.1"
 
 [[ContactImplicitMPC]]
-deps = ["BenchmarkTools", "Colors", "CoordinateTransformations", "DirectTrajectoryOptimization", "Dojo", "FileIO", "ForwardDiff", "GeometryBasics", "IJulia", "IfElse", "InteractiveUtils", "JLD2", "JSON", "LinearAlgebra", "Logging", "MeshCat", "MeshCatMechanisms", "MeshIO", "Meshing", "Parameters", "PkgTemplates", "Plots", "QDLDL", "Quaternions", "Random", "Revise", "RoboDojo", "Rotations", "Scratch", "SparseArrays", "StaticArrays", "SuiteSparse", "Symbolics", "Test", "YAML"]
+deps = ["BenchmarkTools", "Colors", "CoordinateTransformations", "DirectTrajectoryOptimization", "Dojo", "FileIO", "ForwardDiff", "GeometryBasics", "IJulia", "IfElse", "InteractiveUtils", "JLD2", "JSON", "LinearAlgebra", "Logging", "MeshCat", "MeshCatMechanisms", "MeshIO", "Meshing", "Parameters", "PkgTemplates", "Plots", "QDLDL", "Quaternions", "Random", "Revise", "RigidBodyDynamics", "RoboDojo", "Rotations", "Scratch", "SparseArrays", "StaticArrays", "SuiteSparse", "Symbolics", "Test", "YAML"]
 path = "../ContactImplicitMPC.jl"
 uuid = "842347fd-0767-4ff8-b652-76aad5eb0a37"
 version = "0.2.0"

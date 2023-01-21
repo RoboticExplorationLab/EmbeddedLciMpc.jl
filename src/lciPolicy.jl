@@ -90,9 +90,9 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 		if p.buffer_time <= 0.0
 			(p.opts.altitude_update && t > 0.0) && (LciMPC.update_altitude!(p.altitude, p.ϕ, p.s,
 										x, NQ, NC,
-										threshold = 20.0,
+										threshold = p.opts.altitude_impact_threshold,
 										verbose = p.opts.altitude_verbose))
-
+			println(p.altitude)
 			LciMPC.set_altitude!(p.im_traj, p.altitude)
 			LciMPC.update!(p.im_traj, p.traj, p.s, p.altitude, p.κ[1], p.traj.H)
 			# window 
