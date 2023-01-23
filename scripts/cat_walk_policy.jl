@@ -6,7 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-config_path = joinpath(@__DIR__, "config/cat_walk_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/cat_walk_hardware.yaml")
+config_path = joinpath(@__DIR__, "config/cat_walk_step_hardware.yaml")
 # config_path = joinpath(@__DIR__, "config/cat_walk_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
@@ -81,9 +82,9 @@ p_cat_walk = ci_mpc_policy(ref_traj, s, obj,
         max_iter = max_iter_nt),
     mpc_opts = CIMPCOptions(
         # gains=true
-        altitude_verbose=false,
-        altitude_impact_threshold=150.0,
-        altitude_update=false
+        altitude_verbose=true,
+        altitude_impact_threshold=20.0,
+        altitude_update=true
         # live_plotting=true
 )
 )

@@ -92,7 +92,7 @@ function exec_policy(p::LciMPC.CIMPC{T,NQ,NU,NW,NC}, x::Vector{T}, t::T) where {
 										x, NQ, NC,
 										threshold = p.opts.altitude_impact_threshold,
 										verbose = p.opts.altitude_verbose))
-			println(p.altitude)
+			# println(p.altitude)
 			LciMPC.set_altitude!(p.im_traj, p.altitude)
 			LciMPC.update!(p.im_traj, p.traj, p.s, p.altitude, p.κ[1], p.traj.H)
 			# window 
