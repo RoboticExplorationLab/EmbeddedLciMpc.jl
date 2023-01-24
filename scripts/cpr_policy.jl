@@ -6,8 +6,8 @@ using LinearAlgebra
 using YAML
 
 CIMPC_path = dirname(pathof(ContactImplicitMPC))
-# config_path = joinpath(@__DIR__, "config/dog_cpr_hardware.yaml")
-config_path = joinpath(@__DIR__, "config/dog_cpr_gazebo.yaml")
+config_path = joinpath(@__DIR__, "config/dog_cpr_hardware.yaml")
+# config_path = joinpath(@__DIR__, "config/dog_cpr_gazebo.yaml")
 config = YAML.load_file(config_path; dicttype= Dict{String, Float64});
 
 # ## Model Initialization 
@@ -17,7 +17,7 @@ env = s.env
 
 # ## Reference Trajectory Generation 
 ref_traj = deepcopy(get_trajectory(s.model, s.env,
-joinpath(CIMPC_path, "../examples/A1-imitation/results/dog_cpr/run7/dog_cpr.jld2"), 
+joinpath(CIMPC_path, "../examples/A1-imitation/results/dog_cpr/run8/dog_cpr.jld2"), 
 load_type = :split_traj_alt));
 
 H = ref_traj.H
@@ -82,7 +82,7 @@ p_cpr = ci_mpc_policy(ref_traj, s, obj,
     mpc_opts = CIMPCOptions(
         # gains=true
         altitude_verbose=true,
-        altitude_impact_threshold=20.0,
+        altitude_impact_threshold=100.0,
         altitude_update=false
         # live_plotting=true
 )
