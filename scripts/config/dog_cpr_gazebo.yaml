@@ -19,11 +19,11 @@ w_v_pos_x: 5.0e+2
 w_v_pos_y: 1.5e+2
 w_v_pos_z: 1.1e+2
 w_v_ang_z: 2.0e+3
-w_v_ang_y: 2.0e+3
+w_v_ang_y: 4.0e+3
 w_v_ang_x: 2.0e+3
 w_v_ft_x: 1.4e-3
 w_v_ft_y: 1.4e-3
-w_v_ft_z: 2.0e-3
+w_v_ft_z: 1.0e-3
 
 # position q
 w_q_pos_x: 3.0e+1
@@ -32,9 +32,9 @@ w_q_pos_z: 1.0e+1
 w_q_ang_z: 4.0e+2
 w_q_ang_y: 3.0e+2
 w_q_ang_x: 6.0e+2
-w_q_ft_x: 7.0e+1
+w_q_ft_x: 2.0e+2
 w_q_ft_y: 5.0e+1
-w_q_ft_z: 1.5e+2
+w_q_ft_z: 4.5e+2
 # control u
 w_u_1: 8.0e-3
 w_u_2: 8.0e-3
